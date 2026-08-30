@@ -1,0 +1,53 @@
+// Schema do banco de dados - Tier List do Clã Mercenários
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Tier {
+  S
+  A
+  B
+  C
+  D
+}
+
+enum Role {
+  ADMIN
+  MEMBER
+}
+
+model User {
+  id           String   @id @default(cuid())
+  username     String   @unique
+  passwordHash String
+  nickname     String   // nick no Minecraft
+  role         Role     @default(MEMBER)
+  createdAt    DateTime @default(now())
+
+  // Votos que este usuário deu em outros membros
+  votesGiven   Vote[]   @relation("VotesGiven")
+
+  // Votos que este usuário recebeu de outros membros
+  votesReceived Vote[]  @relation("VotesReceived")
+}
+
+model Vote {
+  id         String   @id @default(cuid())
+  tier       Tier
+  createdAt  DateTime @default(now())
+
+  voterId    String
+  voter      User     @relation("VotesGiven", fields: [voterId], references: [id], onDelete: Cascade)
+
+  targetId   String
+  target     User     @relation("VotesReceived", fields: [targetId], references: [id], onDelete: Cascade)
+
+  // Cada pessoa só pode votar uma vez em cada membro
+  @@unique([voterId, targetId])
+}
