@@ -6,12 +6,13 @@
     "seed": "tsx prisma/seed.ts"
   },
   "scripts": {
-    "seed": "prisma db seed",
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
-  },
+  "seed": "prisma db seed",
+  "dev": "next dev",
+  "build": "prisma generate && next build",
+  "postinstall": "prisma generate",
+  "start": "next start",
+  "lint": "eslint"
+},
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.3",
     "@prisma/client": "^5.22.0",
